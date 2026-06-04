@@ -82,34 +82,53 @@ function computeFrame(p, W) {
   }
 }
 
+function fitText(ctx, text, weight, maxFs, minFs, maxW) {
+  let fs = maxFs
+  ctx.font = `${weight} ${fs}px IBM Plex Mono, monospace`
+  while (fs > minFs && ctx.measureText(text).width > maxW) {
+    fs--
+    ctx.font = `${weight} ${fs}px IBM Plex Mono, monospace`
+  }
+  return fs
+}
+
 function drawBox(ctx, x, y, w, h, rgb, op, topLabel, botLabel) {
   const [r, g, b] = rgb
-  const fs = Math.max(10, Math.round(w * 0.092))
+  const pad = 10
+  const maxW = w - pad * 2
+
   ctx.save()
   ctx.globalAlpha = op
 
   ctx.fillStyle = `rgba(${r},${g},${b},0.07)`
   ctx.fillRect(x, y, w, h)
 
-  ctx.shadowBlur  = 14
-  ctx.shadowColor = `rgba(${r},${g},${b},0.28)`
+  ctx.shadowBlur  = 12
+  ctx.shadowColor = `rgba(${r},${g},${b},0.25)`
   ctx.strokeStyle = `rgba(${r},${g},${b},1)`
   ctx.lineWidth   = 1.5
   ctx.strokeRect(x, y, w, h)
   ctx.shadowBlur  = 0
 
-  ctx.fillStyle    = `rgba(${r},${g},${b},0.9)`
-  ctx.font         = `500 ${fs}px IBM Plex Mono, monospace`
-  ctx.textAlign    = 'center'
-  ctx.textBaseline = botLabel ? 'alphabetic' : 'middle'
-  ctx.fillText(topLabel, x + w / 2, botLabel ? y + h / 2 - 1 : y + h / 2)
+  ctx.fillStyle = `rgba(${r},${g},${b},0.9)`
+  ctx.textAlign = 'center'
 
   if (botLabel) {
-    const subFs = Math.max(8, fs - 3)
+    // Driver: dos líneas, fuente basada en h
+    const fs    = fitText(ctx, topLabel, '500', Math.min(12, Math.max(8, Math.round(h * 0.26))), 7, maxW)
+    const subFs = fitText(ctx, botLabel, '400', Math.min(10, Math.max(7, fs - 1)), 6, maxW)
+    ctx.font         = `500 ${fs}px IBM Plex Mono, monospace`
+    ctx.textBaseline = 'alphabetic'
+    ctx.fillText(topLabel, x + w / 2, y + h * 0.47)
     ctx.font         = `400 ${subFs}px IBM Plex Mono, monospace`
     ctx.fillStyle    = `rgba(${r},${g},${b},0.45)`
     ctx.textBaseline = 'top'
-    ctx.fillText(botLabel, x + w / 2, y + h / 2 + 3)
+    ctx.fillText(botLabel, x + w / 2, y + h * 0.56)
+  } else {
+    // Executor: una línea centrada
+    fitText(ctx, topLabel, '500', Math.min(12, Math.max(8, Math.round(h * 0.27))), 7, maxW)
+    ctx.textBaseline = 'middle'
+    ctx.fillText(topLabel, x + w / 2, y + h / 2)
   }
 
   ctx.restore()
@@ -187,20 +206,20 @@ function drawFrame(ctx, W, f) {
     if (f.exeOps[i] < 0.01) return
     drawBox(ctx, ex - exeW / 2, exeY - exeH / 2, exeW, exeH, EXE[i].rgb, f.exeOps[i], `EXECUTOR ${i + 1}`, null)
 
-    // Partition block
+    // Partition chip — encima del executor box, no dentro
     if (f.partOps[i] > 0.01) {
       ctx.save()
       ctx.globalAlpha = f.partOps[i] * f.exeOps[i]
-      const pw = exeW * 0.46, ph = Math.max(10, exeH * 0.22)
-      const px = ex - pw / 2, py = exeY - exeH / 2 + 4
-      ctx.fillStyle   = `rgba(${EXE[i].rgb.join(',')},0.18)`
+      const ph = 14, pw = 36
+      const px = ex - pw / 2
+      const py = exeY - exeH / 2 - ph - 5   // 5px gap por encima del box
+      ctx.fillStyle   = `rgba(${EXE[i].rgb.join(',')},0.15)`
       ctx.fillRect(px, py, pw, ph)
-      ctx.strokeStyle = `rgba(${EXE[i].rgb.join(',')},0.45)`
-      ctx.lineWidth   = 0.75
+      ctx.strokeStyle = `rgba(${EXE[i].rgb.join(',')},0.5)`
+      ctx.lineWidth   = 1
       ctx.strokeRect(px, py, pw, ph)
-      const pf = Math.max(8, Math.round(pw * 0.16))
-      ctx.fillStyle    = `rgba(${EXE[i].rgb.join(',')},0.8)`
-      ctx.font         = `500 ${pf}px IBM Plex Mono, monospace`
+      ctx.fillStyle    = `rgba(${EXE[i].rgb.join(',')},0.85)`
+      ctx.font         = '500 9px IBM Plex Mono, monospace'
       ctx.textAlign    = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(`P${i + 1}`, ex, py + ph / 2)
