@@ -5,7 +5,7 @@ import './index.css'
 
 export default function App() {
   const [selected, setSelected] = useState(null)
-  const [expanded, setExpanded] = useState(['spark'])
+  const [expanded, setExpanded] = useState(['sql'])
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
