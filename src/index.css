@@ -192,6 +192,41 @@ body {
   background: var(--accent-dim);
 }
 
+.subcategory-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 16px 6px 26px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.subcategory-header:hover { background: rgba(255,255,255,0.02); }
+
+.subcategory-arrow {
+  font-size: 8px;
+  width: 9px;
+  transition: transform 0.15s;
+}
+
+.subcategory-arrow.open { transform: rotate(90deg); }
+
+.subcategory-name { flex: 1; }
+
+.concept-item--nested {
+  padding-left: 48px;
+}
+
 /* ── MAIN PANEL ──────────────────────────────────── */
 
 .main-panel {

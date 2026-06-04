@@ -12,8 +12,14 @@ export default function App() {
     const q = search.trim().toLowerCase()
     if (!q) return categories
     return categories
-      .map(cat => ({ ...cat, concepts: cat.concepts.filter(c => c.name.toLowerCase().includes(q)) }))
-      .filter(cat => cat.concepts.length > 0)
+      .map(cat => ({
+        ...cat,
+        concepts: (cat.concepts ?? []).filter(c => c.name.toLowerCase().includes(q)),
+        subcategories: (cat.subcategories ?? [])
+          .map(sub => ({ ...sub, concepts: sub.concepts.filter(c => c.name.toLowerCase().includes(q)) }))
+          .filter(sub => sub.concepts.length > 0)
+      }))
+      .filter(cat => (cat.concepts?.length ?? 0) > 0 || (cat.subcategories?.length ?? 0) > 0)
   }, [search])
 
   const toggle = (id) =>
@@ -44,22 +50,50 @@ export default function App() {
               <button className="category-header" onClick={() => toggle(cat.id)}>
                 <span className={`category-arrow ${expanded.includes(cat.id) ? 'open' : ''}`}>▸</span>
                 <span className="category-name">{cat.name}</span>
-                <span className="category-count">{cat.concepts.length}</span>
+                <span className="category-count">{(cat.concepts?.length ?? 0) + (cat.subcategories ?? []).reduce((s, sub) => s + sub.concepts.length, 0)}</span>
               </button>
 
               {expanded.includes(cat.id) && (
-                <ul className="concept-list">
-                  {cat.concepts.map(concept => (
-                    <li key={concept.id}>
-                      <button
-                        className={`concept-item ${selected?.id === concept.id ? 'active' : ''}`}
-                        onClick={() => setSelected({ ...concept, categoryName: cat.name })}
-                      >
-                        {concept.name}
+                <>
+                  {cat.concepts?.length > 0 && (
+                    <ul className="concept-list">
+                      {cat.concepts.map(concept => (
+                        <li key={concept.id}>
+                          <button
+                            className={`concept-item ${selected?.id === concept.id ? 'active' : ''}`}
+                            onClick={() => setSelected({ ...concept, categoryName: cat.name })}
+                          >
+                            {concept.name}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {cat.subcategories?.map(sub => (
+                    <div key={sub.id}>
+                      <button className="subcategory-header" onClick={() => toggle(sub.id)}>
+                        <span className={`subcategory-arrow ${expanded.includes(sub.id) ? 'open' : ''}`}>▸</span>
+                        <span className="subcategory-name">{sub.name}</span>
+                        <span className="category-count">{sub.concepts.length}</span>
                       </button>
-                    </li>
+                      {expanded.includes(sub.id) && (
+                        <ul className="concept-list">
+                          {sub.concepts.map(concept => (
+                            <li key={concept.id}>
+                              <button
+                                className={`concept-item concept-item--nested ${selected?.id === concept.id ? 'active' : ''}`}
+                                onClick={() => setSelected({ ...concept, categoryName: `${cat.name} · ${sub.name}` })}
+                              >
+                                {concept.name}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   ))}
-                </ul>
+                </>
               )}
             </div>
           ))}

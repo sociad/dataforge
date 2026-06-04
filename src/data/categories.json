@@ -20,6 +20,24 @@
   {
     "id": "spark",
     "name": "Spark",
-    "concepts": []
+    "subcategories": [
+      {
+        "id": "arquitectura",
+        "name": "Arquitectura",
+        "concepts": [
+          {
+            "id": "driver-executors",
+            "name": "Driver & Executors",
+            "theory": "El Driver es el proceso central de una aplicación Spark. Es el que corre tu código Python o Scala: construye el plan lógico de ejecución, lo optimiza, y lo divide en Tasks que envía a los workers. Existe exactamente un Driver por aplicación.\n\nLos Executors son los procesos que corren en los nodos del cluster. Cada Executor recibe Tasks del Driver, las ejecuta contra sus particiones de datos, y devuelve los resultados. Son stateless en el sentido de que el Driver siempre puede re-lanzar un Executor caído y reenviar sus Tasks.\n\nEntre Driver y Executors hay un Cluster Manager (YARN, Kubernetes o Standalone) cuyo rol es asignar recursos — cuánta memoria y CPU obtiene cada Executor. El Cluster Manager no conoce nada del código Spark; solo gestiona contenedores.\n\nEl patrón clave: todo código que corre en el Driver es coordinación; todo código que corre en los Executors es procesamiento de datos. Un .collect() mueve todos los datos al Driver — es un anti-patrón para datasets grandes porque el Driver puede quedarse sin memoria.",
+            "aplicacion": [
+              "El Driver construye el DAG completo antes de ejecutar. Ningún dato se mueve hasta que llega una acción (.show(), .write(), .count()).",
+              "Los Executors procesan particiones en paralelo — cada uno trabaja sobre su slice del dataset de forma independiente.",
+              "Si un Executor falla, el Driver detecta la falla y reasigna sus Tasks a otro Executor sin reiniciar la aplicación.",
+              ".collect() trae todos los datos al Driver. Para datasets grandes es un anti-patrón — el Driver puede quedarse sin memoria."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
