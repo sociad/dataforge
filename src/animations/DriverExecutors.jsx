@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 const TOTAL_MS = 27000
+const CANVAS_H = 280   // height fija — evita dependencia circular en flex
 
 const DRV_RGB = [24, 117, 204]
 const DRV_HEX = '#1875CC'
@@ -27,15 +28,17 @@ const SCENES = [
   { title: '1 Driver · N Executors',   desc: 'El Driver coordina y nunca toca datos. Los Executors procesan y nunca planifican.' },
 ]
 
-function computeFrame(p, W, H) {
-  const drvW = W * 0.22
-  const drvH = Math.max(40, H * 0.15)
-  const exeW = W * 0.16
-  const exeH = Math.max(40, H * 0.15)
+function computeFrame(p, W) {
+  const H    = CANVAS_H
+  const drvW = W * 0.24
+  const drvH = Math.max(44, H * 0.16)
+  const exeW = W * 0.20
+  const exeH = Math.max(44, H * 0.16)
   const drvX = W / 2
-  const drvY = H * 0.28
-  const exeY = H * 0.76
-  const exeXs = [W * 0.20, W * 0.50, W * 0.80]
+  const drvY = H * 0.30
+  const exeY = H * 0.78
+  // executors usan 14–86% del ancho para llenar bien el canvas
+  const exeXs = [W * 0.14, W * 0.50, W * 0.86]
 
   const scene =
     p < 0.111 ? 0 : p < 0.222 ? 1 : p < 0.333 ? 2 :
@@ -81,7 +84,7 @@ function computeFrame(p, W, H) {
 
 function drawBox(ctx, x, y, w, h, rgb, op, topLabel, botLabel) {
   const [r, g, b] = rgb
-  const fs = Math.max(9, Math.round(w * 0.084))
+  const fs = Math.max(10, Math.round(w * 0.092))
   ctx.save()
   ctx.globalAlpha = op
 
@@ -102,7 +105,8 @@ function drawBox(ctx, x, y, w, h, rgb, op, topLabel, botLabel) {
   ctx.fillText(topLabel, x + w / 2, botLabel ? y + h / 2 - 1 : y + h / 2)
 
   if (botLabel) {
-    ctx.font         = `400 ${Math.max(8, fs - 2)}px IBM Plex Mono, monospace`
+    const subFs = Math.max(8, fs - 3)
+    ctx.font         = `400 ${subFs}px IBM Plex Mono, monospace`
     ctx.fillStyle    = `rgba(${r},${g},${b},0.45)`
     ctx.textBaseline = 'top'
     ctx.fillText(botLabel, x + w / 2, y + h / 2 + 3)
@@ -118,12 +122,13 @@ function drawDot(ctx, x, y, rgb) {
   ctx.shadowColor = `rgba(${r},${g},${b},0.7)`
   ctx.fillStyle   = `rgba(${r},${g},${b},0.95)`
   ctx.beginPath()
-  ctx.arc(x, y, 5, 0, Math.PI * 2)
+  ctx.arc(x, y, 6, 0, Math.PI * 2)
   ctx.fill()
   ctx.restore()
 }
 
-function drawFrame(ctx, W, H, f) {
+function drawFrame(ctx, W, f) {
+  const H = CANVAS_H
   const { drvX, drvY, drvW, drvH, exeXs, exeY, exeW, exeH } = f
   ctx.clearRect(0, 0, W, H)
 
@@ -131,8 +136,8 @@ function drawFrame(ctx, W, H, f) {
   if (f.datasetOp > 0.01) {
     ctx.save()
     ctx.globalAlpha = f.datasetOp
-    const bw = W * 0.36, bh = H * 0.11
-    const bx = W / 2 - bw / 2, by = H * 0.07
+    const bw = W * 0.38, bh = H * 0.12
+    const bx = W / 2 - bw / 2, by = H * 0.06
     ctx.fillStyle = 'rgba(0,0,0,0.04)'
     ctx.fillRect(bx, by, bw, bh)
     ctx.setLineDash([3, 3])
@@ -148,23 +153,24 @@ function drawFrame(ctx, W, H, f) {
       ctx.lineWidth = 1
       ctx.stroke()
     }
+    const fds = Math.max(10, Math.round(bw * 0.048))
     ctx.fillStyle = 'rgba(0,0,0,0.38)'
-    ctx.font = `500 ${Math.max(9, Math.round(bw * 0.052))}px IBM Plex Mono, monospace`
+    ctx.font = `500 ${fds}px IBM Plex Mono, monospace`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText('DATASET', W / 2, by + bh / 2)
     ctx.restore()
   }
 
-  // Connection lines (dashed, driver → executor)
+  // Connection lines
   exeXs.forEach((ex, i) => {
     if (f.lineProg[i] < 0.01) return
     const x1 = drvX, y1 = drvY + drvH / 2
     const x2 = ex,   y2 = exeY - exeH / 2
     ctx.save()
-    ctx.setLineDash([4, 5])
+    ctx.setLineDash([5, 5])
     ctx.strokeStyle = `rgba(${EXE[i].rgb.join(',')},0.22)`
-    ctx.lineWidth = 1
+    ctx.lineWidth = 1.5
     ctx.beginPath()
     ctx.moveTo(x1, y1)
     ctx.lineTo(lerp(x1, x2, f.lineProg[i]), lerp(y1, y2, f.lineProg[i]))
@@ -174,26 +180,27 @@ function drawFrame(ctx, W, H, f) {
 
   // Driver box
   if (f.driverOp > 0.01)
-    drawBox(ctx, drvX - drvW / 2, drvY - drvH / 2, drvW, drvH, DRV_RGB, f.driverOp, 'DRIVER', 'coordina · planifica')
+    drawBox(ctx, drvX - drvW / 2, drvY - drvH / 2, drvW, drvH, DRV_RGB, f.driverOp, 'DRIVER', 'coordina')
 
   // Executor boxes
   exeXs.forEach((ex, i) => {
     if (f.exeOps[i] < 0.01) return
     drawBox(ctx, ex - exeW / 2, exeY - exeH / 2, exeW, exeH, EXE[i].rgb, f.exeOps[i], `EXECUTOR ${i + 1}`, null)
 
-    // Partition mini-block
+    // Partition block
     if (f.partOps[i] > 0.01) {
       ctx.save()
       ctx.globalAlpha = f.partOps[i] * f.exeOps[i]
-      const pw = exeW * 0.52, ph = exeH * 0.20
+      const pw = exeW * 0.46, ph = Math.max(10, exeH * 0.22)
       const px = ex - pw / 2, py = exeY - exeH / 2 + 4
       ctx.fillStyle   = `rgba(${EXE[i].rgb.join(',')},0.18)`
       ctx.fillRect(px, py, pw, ph)
       ctx.strokeStyle = `rgba(${EXE[i].rgb.join(',')},0.45)`
       ctx.lineWidth   = 0.75
       ctx.strokeRect(px, py, pw, ph)
-      ctx.fillStyle    = `rgba(${EXE[i].rgb.join(',')},0.75)`
-      ctx.font         = `500 ${Math.max(7, Math.round(exeW * 0.10))}px IBM Plex Mono, monospace`
+      const pf = Math.max(8, Math.round(pw * 0.16))
+      ctx.fillStyle    = `rgba(${EXE[i].rgb.join(',')},0.8)`
+      ctx.font         = `500 ${pf}px IBM Plex Mono, monospace`
       ctx.textAlign    = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(`P${i + 1}`, ex, py + ph / 2)
@@ -204,8 +211,8 @@ function drawFrame(ctx, W, H, f) {
     if (f.procT[i] > 0.01) {
       ctx.save()
       ctx.globalAlpha = f.exeOps[i]
-      const bx = ex - exeW / 2 + 5, by2 = exeY + exeH / 2 - 11
-      const bw = exeW - 10, bh = 4
+      const bx = ex - exeW / 2 + 6, by2 = exeY + exeH / 2 - 12
+      const bw = exeW - 12, bh = 5
       ctx.fillStyle = 'rgba(0,0,0,0.07)'
       ctx.fillRect(bx, by2, bw, bh)
       ctx.fillStyle = `rgba(${EXE[i].rgb.join(',')},0.65)`
@@ -257,9 +264,8 @@ export default function DriverExecutors() {
   useEffect(() => {
     const canvas = canvasRef.current
     const W = wrapRef.current.clientWidth
-    const H = wrapRef.current.clientHeight || 240
     canvas.width  = W
-    canvas.height = H
+    canvas.height = CANVAS_H
 
     const tick = (ts) => {
       const c = clock.current
@@ -268,9 +274,9 @@ export default function DriverExecutors() {
         c.elapsed = ts - c.startTs
       }
       const p = (c.elapsed % TOTAL_MS) / TOTAL_MS
-      const f = computeFrame(p, W, H)
+      const f = computeFrame(p, W)
 
-      drawFrame(canvas.getContext('2d'), W, H, f)
+      drawFrame(canvas.getContext('2d'), W, f)
 
       if (!isDragging.current && scrubberRef.current)
         scrubberRef.current.value = String(Math.floor(p * 1000))
@@ -321,15 +327,14 @@ export default function DriverExecutors() {
 
       <div style={{ flex: 1, display: 'flex', gap: 14, minHeight: 0 }}>
 
-        {/* Canvas */}
-        <div ref={wrapRef} style={{ flex: 1, position: 'relative', minWidth: 0 }}>
-          <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+        {/* Canvas — width: 100% asegura que ocupe todo el espacio disponible */}
+        <div ref={wrapRef} style={{ flex: 1, minWidth: 0 }}>
+          <canvas ref={canvasRef} style={{ display: 'block', width: '100%' }} />
         </div>
 
         {/* Info panel */}
         <div style={{ width: 210, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-          {/* Scene annotation */}
           <div style={{ flex: 1, position: 'relative', background: 'rgba(0,0,0,0.04)', border: '1px solid #D2D7E8', borderRadius: 4, minHeight: 0 }}>
             <div ref={textFadeRef} style={{ position: 'absolute', inset: 0, padding: '13px 14px', opacity: 1 }}>
               <div ref={titleRef} style={{ fontSize: 11, fontWeight: 700, color: '#1A2040', marginBottom: 8, lineHeight: 1.4 }}>
@@ -341,13 +346,12 @@ export default function DriverExecutors() {
             </div>
           </div>
 
-          {/* Cluster stats */}
           <div style={{ padding: '11px 14px', background: 'rgba(0,0,0,0.04)', border: '1px solid #D2D7E8', borderRadius: 4, flexShrink: 0 }}>
             <div style={{ fontSize: 9, letterSpacing: '0.16em', color: '#9099B5', marginBottom: 9, textTransform: 'uppercase' }}>Cluster</div>
             {[
-              { label: 'Driver',       value: '1',  color: DRV_HEX },
-              { label: 'Executors',    value: '3',  color: '#1A2040' },
-              { label: 'Particiones',  value: '3',  color: '#1A2040' },
+              { label: 'Driver',      value: '1', color: DRV_HEX },
+              { label: 'Executors',   value: '3', color: '#1A2040' },
+              { label: 'Particiones', value: '3', color: '#1A2040' },
             ].map(({ label, value, color }) => (
               <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
                 <span style={{ fontSize: 10, color: '#4B5680' }}>{label}</span>
