@@ -327,9 +327,10 @@ export default function DriverExecutors() {
 
       <div style={{ flex: 1, display: 'flex', gap: 14, minHeight: 0 }}>
 
-        {/* Canvas — width: 100% asegura que ocupe todo el espacio disponible */}
-        <div ref={wrapRef} style={{ flex: 1, minWidth: 0 }}>
-          <canvas ref={canvasRef} style={{ display: 'block', width: '100%' }} />
+        {/* Canvas — mismo patrón que WindowFunctions: posición absoluta sin CSS width/height */}
+        <div ref={wrapRef} style={{ flex: 1, position: 'relative', minWidth: 0 }}>
+          <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0 }} />
+          <div style={{ height: CANVAS_H }} />
         </div>
 
         {/* Info panel */}
