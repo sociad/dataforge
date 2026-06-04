@@ -324,7 +324,7 @@ export default function DriverExecutors() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%', fontFamily: "'IBM Plex Mono', monospace" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, height: '100%', width: '100%', fontFamily: "'IBM Plex Mono', monospace" }}>
 
       <div style={{ flex: 1, display: 'flex', gap: 14, minHeight: 0 }}>
 
