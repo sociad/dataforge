@@ -227,10 +227,10 @@ body {
 
 .concept-title {
   font-family: var(--font-mono);
-  font-size: 24px;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  color: var(--text-primary);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #F2F5FF;
 }
 
 .concept-body {
@@ -242,7 +242,7 @@ body {
 }
 
 .theory-section {
-  flex: 0 0 38%;
+  flex: 0 0 46%;
   padding: 20px 44px 18px;
   border-bottom: none;
   overflow: hidden;
@@ -299,13 +299,55 @@ body {
   background: #D2D7E8;
 }
 
-.theory-content {
+.theory-body {
   font-family: var(--font-body);
   font-size: 13.5px;
   line-height: 1.75;
   color: #B8C0D6;
   columns: 2;
   column-gap: 44px;
+}
+
+.theory-application {
+  margin-top: 14px;
+  padding: 11px 14px 11px 16px;
+  background: rgba(0, 207, 255, 0.04);
+  border-left: 2px solid rgba(0, 207, 255, 0.35);
+  border-radius: 0 3px 3px 0;
+}
+
+.application-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.application-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.application-list li {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #B8C0D6;
+  padding-left: 14px;
+  position: relative;
+}
+
+.application-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: rgba(0, 207, 255, 0.5);
+  font-family: var(--font-mono);
 }
 
 .animation-box {

@@ -6,7 +6,14 @@
       {
         "id": "window-functions",
         "name": "Window Functions",
-        "theory": "Una window function (función de ventana) calcula un resultado para cada fila usando un conjunto de filas relacionadas —la \"ventana\"— sin colapsar esas filas en una sola salida. Esta es la diferencia fundamental con GROUP BY: cada fila de entrada sobrevive en el output, enriquecida con un valor calculado sobre sus vecinas.\n\nLa ventana se define con tres cláusulas: PARTITION BY divide las filas en grupos independientes (similar a GROUP BY pero sin colapsar); ORDER BY establece el orden dentro de cada partición; y la especificación de frame (ROWS BETWEEN / RANGE BETWEEN) acota la ventana a un subconjunto de esa partición ordenada, por ejemplo solo las filas anteriores hasta la actual inclusive.\n\nFunciones comunes que operan sobre una ventana: funciones de ranking (RANK, DENSE_RANK, ROW_NUMBER), funciones analíticas (LAG, LEAD, FIRST_VALUE, LAST_VALUE) y funciones de agregación en contexto ventana (SUM, AVG, MAX, MIN). En Spark se expresan mediante el objeto Window y el método .over() sobre una expresión de columna.\n\nEl modelo mental clave: cada fila tiene una lupa sobre su propio slice del dataset y lee un valor de ese slice, mientras permanece en su fila original."
+        "theory": "Una window function calcula un valor para cada fila usando un conjunto de filas relacionadas —la ventana— sin colapsar el resultado en una sola fila. Esta es la diferencia fundamental con GROUP BY: cada fila de entrada sobrevive en el output, enriquecida con el cálculo sobre sus vecinas.\n\nLa ventana se define con tres cláusulas: PARTITION BY divide las filas en grupos independientes; ORDER BY establece el orden dentro de cada partición; y el frame (ROWS BETWEEN / RANGE BETWEEN) acota exactamente qué filas forman la ventana en cada paso.\n\nFunciones comunes: ranking (RANK, DENSE_RANK, ROW_NUMBER), analíticas (LAG, LEAD, FIRST_VALUE, LAST_VALUE) y agregaciones en contexto ventana (SUM, AVG, MAX, MIN).",
+        "aplicacion": [
+          "La animación calcula SUM(salary) particionado por departamento con una ventana acumulativa.",
+          "PARTITION BY dept crea dos grupos independientes — eng y sales — que se procesan por separado. El cálculo de uno no afecta al otro.",
+          "ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW define que la ventana arranca en la primera fila de la partición y crece hasta la fila actual. Por eso la suma aumenta fila a fila.",
+          "Al cambiar de partición, la ventana reinicia en cero. Dave (sales) no acumula sobre Carol (eng).",
+          "6 filas entran → 6 filas salen. GROUP BY dept devolvería solo 2 filas y perdería la identidad de cada empleado."
+        ]
       }
     ]
   },

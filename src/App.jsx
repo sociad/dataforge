@@ -75,11 +75,21 @@ export default function App() {
             </div>
             <div className="concept-body">
               <section className="theory-section">
-                <div className="section-label">THEORY</div>
-                <div className="theory-content">{selected.theory}</div>
+                <div className="section-label">TEORÍA</div>
+                <div className="theory-body">{selected.theory}</div>
+                {selected.aplicacion && (
+                  <div className="theory-application">
+                    <div className="application-label">EN ESTA ANIMACIÓN</div>
+                    <ul className="application-list">
+                      {selected.aplicacion.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </section>
               <section className="animation-section">
-                <div className="section-label">ANIMATION</div>
+                <div className="section-label">EXPLICACIÓN GRÁFICA</div>
                 {animations[selected.id]
                   ? <div className="animation-box live">{(() => { const Anim = animations[selected.id]; return <Anim /> })()}</div>
                   : <div className="animation-box">// animation coming soon</div>
