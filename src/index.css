@@ -210,7 +210,7 @@ body {
 }
 
 .concept-header {
-  padding: 26px 44px 22px;
+  padding: 18px 44px 16px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
@@ -237,22 +237,37 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-light) transparent;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .theory-section {
-  padding: 28px 44px 24px;
-  border-bottom: 1px solid var(--border);
+  flex: 0 0 38%;
+  padding: 20px 44px 18px;
+  border-bottom: none;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .animation-section {
-  padding: 28px 44px;
   flex: 1;
+  padding: 20px 44px 20px;
   display: flex;
   flex-direction: column;
-  min-height: 300px;
+  min-height: 0;
+  overflow: hidden;
+  background: #F4F7FF;
+  border-top: 1px solid #C5CDE8;
+  position: relative;
+}
+
+.animation-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
 }
 
 .section-label {
@@ -260,10 +275,12 @@ body {
   font-weight: 500;
   letter-spacing: 0.28em;
   color: var(--text-muted);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
   gap: 14px;
+  position: relative;
+  flex-shrink: 0;
 }
 
 .section-label::after {
@@ -273,12 +290,22 @@ body {
   background: var(--border);
 }
 
+.animation-section .section-label {
+  color: #8E97B8;
+  opacity: 1;
+}
+
+.animation-section .section-label::after {
+  background: #D2D7E8;
+}
+
 .theory-content {
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.85;
+  font-size: 13.5px;
+  line-height: 1.75;
   color: #B8C0D6;
-  max-width: 700px;
+  columns: 2;
+  column-gap: 44px;
 }
 
 .animation-box {
@@ -288,10 +315,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 220px;
   color: var(--text-muted);
   font-size: 12px;
   letter-spacing: 0.06em;
+  min-height: 0;
+  position: relative;
+}
+
+.animation-box.live {
+  border: none;
+  padding: 0;
+  align-items: flex-start;
+  justify-content: flex-start;
+  overflow: hidden;
+  background: transparent;
 }
 
 /* empty state */

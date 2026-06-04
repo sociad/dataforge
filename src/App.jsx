@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import categories from './data/categories.json'
+import { animations } from './animations/index.js'
 import './index.css'
 
 export default function App() {
@@ -79,7 +80,10 @@ export default function App() {
               </section>
               <section className="animation-section">
                 <div className="section-label">ANIMATION</div>
-                <div className="animation-box">// animation coming soon</div>
+                {animations[selected.id]
+                  ? <div className="animation-box live">{(() => { const Anim = animations[selected.id]; return <Anim /> })()}</div>
+                  : <div className="animation-box">// animation coming soon</div>
+                }
               </section>
             </div>
           </div>

@@ -2,6 +2,12 @@
   {
     "id": "spark",
     "name": "Spark",
-    "concepts": []
+    "concepts": [
+      {
+        "id": "window-functions",
+        "name": "Window Functions",
+        "theory": "Una window function (función de ventana) calcula un resultado para cada fila usando un conjunto de filas relacionadas —la \"ventana\"— sin colapsar esas filas en una sola salida. Esta es la diferencia fundamental con GROUP BY: cada fila de entrada sobrevive en el output, enriquecida con un valor calculado sobre sus vecinas.\n\nLa ventana se define con tres cláusulas: PARTITION BY divide las filas en grupos independientes (similar a GROUP BY pero sin colapsar); ORDER BY establece el orden dentro de cada partición; y la especificación de frame (ROWS BETWEEN / RANGE BETWEEN) acota la ventana a un subconjunto de esa partición ordenada, por ejemplo solo las filas anteriores hasta la actual inclusive.\n\nFunciones comunes que operan sobre una ventana: funciones de ranking (RANK, DENSE_RANK, ROW_NUMBER), funciones analíticas (LAG, LEAD, FIRST_VALUE, LAST_VALUE) y funciones de agregación en contexto ventana (SUM, AVG, MAX, MIN). En Spark se expresan mediante el objeto Window y el método .over() sobre una expresión de columna.\n\nEl modelo mental clave: cada fila tiene una lupa sobre su propio slice del dataset y lee un valor de ese slice, mientras permanece en su fila original."
+      }
+    ]
   }
 ]
