@@ -65,3 +65,29 @@ Cada animación de concepto debe:
 - Ilustrar la *mecánica* del concepto, no solo etiquetarlo
 - Ser suficientemente simple para entenderse en menos de 30 segundos sin sonido
 - Funcionar bien en desktop (mobile es secundario)
+
+## Estilo visual — consistencia obligatoria
+
+Todas las animaciones comparten el mismo sistema de diseño. No romper ninguno de estos puntos al crear una nueva:
+
+**Tema**: fondo claro (`#F4F7FF`, el mismo que usa `.animation-section`)
+
+**Tipografía**: `IBM Plex Mono` exclusivamente, igual que el resto de la app
+
+**Layout de dos paneles** dentro de la animación:
+- Panel izquierdo: `flex: 1` — el canvas o la visualización principal
+- Panel derecho: ancho fijo (~210–240px) — panel de información con título de escena, descripción y métricas clave
+
+**Controles**: siempre presentes al pie — scrubber de progreso + botón pausar + botón reiniciar, con el color accent de la animación
+
+**Ritmo**: cada escena dura entre 2 y 3 segundos. Actualmente se usa `TOTAL_MS = 27000` (9 escenas × 3 s)
+
+**Paleta de colores**:
+- Azul (eng / Driver): `#1875CC`, RGB `[24, 117, 204]`
+- Naranja (sales / Executor 1): `#D4580A`, RGB `[212, 88, 10]`
+- Verde (Executor 2): `#1BAA6E`, RGB `[27, 170, 110]`
+- Violeta (Executor 3): `#7C44CC`, RGB `[124, 68, 204]`
+- Textos oscuros sobre fondo claro: `#1A2040` (primario), `#4B5680` (secundario), `#9099B5` (muted)
+- Bordes: `#D2D7E8`
+
+**Dimensiones**: las cajas y elementos del canvas deben escalar proporcionalmente con `W` y `H` del canvas para ocupar bien el espacio disponible — no usar tamaños fijos en píxeles absolutos

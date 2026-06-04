@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-const TOTAL_MS = 18000
+const TOTAL_MS = 27000
 
 const DRV_RGB = [24, 117, 204]
 const DRV_HEX = '#1875CC'
@@ -28,8 +28,10 @@ const SCENES = [
 ]
 
 function computeFrame(p, W, H) {
-  const drvW = 124, drvH = 42
-  const exeW = 86,  exeH = 42
+  const drvW = W * 0.22
+  const drvH = Math.max(40, H * 0.15)
+  const exeW = W * 0.16
+  const exeH = Math.max(40, H * 0.15)
   const drvX = W / 2
   const drvY = H * 0.28
   const exeY = H * 0.76
@@ -79,13 +81,14 @@ function computeFrame(p, W, H) {
 
 function drawBox(ctx, x, y, w, h, rgb, op, topLabel, botLabel) {
   const [r, g, b] = rgb
+  const fs = Math.max(9, Math.round(w * 0.084))
   ctx.save()
   ctx.globalAlpha = op
 
   ctx.fillStyle = `rgba(${r},${g},${b},0.07)`
   ctx.fillRect(x, y, w, h)
 
-  ctx.shadowBlur  = 12
+  ctx.shadowBlur  = 14
   ctx.shadowColor = `rgba(${r},${g},${b},0.28)`
   ctx.strokeStyle = `rgba(${r},${g},${b},1)`
   ctx.lineWidth   = 1.5
@@ -93,13 +96,13 @@ function drawBox(ctx, x, y, w, h, rgb, op, topLabel, botLabel) {
   ctx.shadowBlur  = 0
 
   ctx.fillStyle    = `rgba(${r},${g},${b},0.9)`
-  ctx.font         = '500 9px IBM Plex Mono, monospace'
+  ctx.font         = `500 ${fs}px IBM Plex Mono, monospace`
   ctx.textAlign    = 'center'
   ctx.textBaseline = botLabel ? 'alphabetic' : 'middle'
   ctx.fillText(topLabel, x + w / 2, botLabel ? y + h / 2 - 1 : y + h / 2)
 
   if (botLabel) {
-    ctx.font         = '400 8px IBM Plex Mono, monospace'
+    ctx.font         = `400 ${Math.max(8, fs - 2)}px IBM Plex Mono, monospace`
     ctx.fillStyle    = `rgba(${r},${g},${b},0.45)`
     ctx.textBaseline = 'top'
     ctx.fillText(botLabel, x + w / 2, y + h / 2 + 3)
@@ -128,8 +131,8 @@ function drawFrame(ctx, W, H, f) {
   if (f.datasetOp > 0.01) {
     ctx.save()
     ctx.globalAlpha = f.datasetOp
-    const bw = 190, bh = 28
-    const bx = W / 2 - bw / 2, by = H * 0.08
+    const bw = W * 0.36, bh = H * 0.11
+    const bx = W / 2 - bw / 2, by = H * 0.07
     ctx.fillStyle = 'rgba(0,0,0,0.04)'
     ctx.fillRect(bx, by, bw, bh)
     ctx.setLineDash([3, 3])
@@ -146,7 +149,7 @@ function drawFrame(ctx, W, H, f) {
       ctx.stroke()
     }
     ctx.fillStyle = 'rgba(0,0,0,0.38)'
-    ctx.font = '500 9px IBM Plex Mono, monospace'
+    ctx.font = `500 ${Math.max(9, Math.round(bw * 0.052))}px IBM Plex Mono, monospace`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText('DATASET', W / 2, by + bh / 2)
@@ -182,7 +185,7 @@ function drawFrame(ctx, W, H, f) {
     if (f.partOps[i] > 0.01) {
       ctx.save()
       ctx.globalAlpha = f.partOps[i] * f.exeOps[i]
-      const pw = 34, ph = 7
+      const pw = exeW * 0.52, ph = exeH * 0.20
       const px = ex - pw / 2, py = exeY - exeH / 2 + 4
       ctx.fillStyle   = `rgba(${EXE[i].rgb.join(',')},0.18)`
       ctx.fillRect(px, py, pw, ph)
@@ -190,7 +193,7 @@ function drawFrame(ctx, W, H, f) {
       ctx.lineWidth   = 0.75
       ctx.strokeRect(px, py, pw, ph)
       ctx.fillStyle    = `rgba(${EXE[i].rgb.join(',')},0.75)`
-      ctx.font         = '500 7px IBM Plex Mono, monospace'
+      ctx.font         = `500 ${Math.max(7, Math.round(exeW * 0.10))}px IBM Plex Mono, monospace`
       ctx.textAlign    = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(`P${i + 1}`, ex, py + ph / 2)
