@@ -263,7 +263,8 @@ export default function DriverExecutors() {
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const W = wrapRef.current.clientWidth
+    // offsetWidth lee el ancho ya resuelto por CSS (width:100% del wrapper flex)
+    const W = canvas.offsetWidth
     canvas.width  = W
     canvas.height = CANVAS_H
 
@@ -327,10 +328,9 @@ export default function DriverExecutors() {
 
       <div style={{ flex: 1, display: 'flex', gap: 14, minHeight: 0 }}>
 
-        {/* Canvas — mismo patrón que WindowFunctions: posición absoluta sin CSS width/height */}
         <div ref={wrapRef} style={{ flex: 1, position: 'relative', minWidth: 0 }}>
-          <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0 }} />
-          <div style={{ height: CANVAS_H }} />
+          <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%' }} />
+          <div style={{ width: '100%', height: CANVAS_H }} />
         </div>
 
         {/* Info panel */}
