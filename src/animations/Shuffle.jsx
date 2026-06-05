@@ -83,7 +83,9 @@ function drawFrame(ctx, W, p) {
   const exeOp    = eout(pg(p, 0, 0.07))
   const shuffleT = eio(pg(p, 0.333, 0.556))
   const procT    = pg(p, 0.667, 0.762)
-  const costOp   = eout(pg(p, 0.778, 0.840))
+  const costOp   = p < 0.889
+    ? eout(pg(p, 0.778, 0.840))
+    : 1 - eout(pg(p, 0.889, 0.930))
   const resultOp = eout(pg(p, 0.889, 0.950))
 
   // Executor boxes
@@ -184,7 +186,7 @@ function drawFrame(ctx, W, p) {
 
   // Cost breakdown bars (scene 7)
   if (costOp > 0.01) {
-    const labels = ['write', 'red', 'read']
+    const labels = ['write', 'network', 'read']
     const fills  = [0.45, 1.0, 0.40]
     const totalW = W * 0.52
     const bh     = 11
