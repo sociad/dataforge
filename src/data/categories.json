@@ -37,6 +37,24 @@
             ]
           }
         ]
+      },
+      {
+        "id": "ejecucion",
+        "name": "Ejecución",
+        "concepts": [
+          {
+            "id": "shuffle",
+            "name": "Shuffle",
+            "theory": "El shuffle es la redistribución de datos entre particiones en Spark. Ocurre cuando una operación necesita que filas con la misma clave estén en el mismo executor: groupBy, join, orderBy, distinct.\n\nEl proceso tiene tres fases. Shuffle write: cada executor serializa sus filas clasificadas por hash(clave) y las escribe a disco local. Transferencia de red: los datos viajan entre executors — cada executor envía los datos que no le corresponden a quien los necesita. Shuffle read: los executors leen desde el disco de los otros y reciben los datos en su partición final.\n\nEl costo real está en la transferencia de red y en la doble escritura a disco (shuffle write + shuffle read). En datasets de terabytes, un shuffle puede tomar minutos y convertirse en el cuello de botella de todo el job.\n\nSpark intenta minimizarlos: el optimizer empuja filtros antes del shuffle (predicate pushdown), los broadcast joins envían una tabla pequeña a todos los executors para evitar redistribuir la tabla grande, y el bucketing pre-particiona los datos en disco para evitar reshuffles en joins repetidos.",
+            "aplicacion": [
+              "La animación muestra 3 executors con filas de 3 departamentos mezcladas — el estado típico después de leer un archivo sin particionado por clave.",
+              "groupBy('dept') dispara el shuffle: Spark necesita que todas las filas del mismo dept estén juntas en un executor para poder agregar.",
+              "Durante el shuffle, cada executor envía las filas que no le corresponden y recibe las que sí. El tráfico cruzado es el costo de red.",
+              "Al terminar, cada executor tiene solo un departamento. La agregación sum(salary) se ejecuta localmente, sin más movimiento de datos.",
+              "El costo: shuffle write (disco) + red + shuffle read (disco). La barra de 'red' domina. En la Spark UI, Shuffle Read/Write Size es la métrica a vigilar."
+            ]
+          }
+        ]
       }
     ]
   }
