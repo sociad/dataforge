@@ -156,8 +156,9 @@ body {
 .category-name  { flex: 1; }
 
 .category-count {
-  color: var(--text-muted);
-  font-size: 10px;
+  color: #5A6480;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .concept-list {
@@ -196,8 +197,9 @@ body {
 }
 
 .concept-num {
-  font-size: 10px;
-  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  color: #5A6480;
   flex-shrink: 0;
   width: 18px;
   text-align: right;
@@ -205,7 +207,7 @@ body {
 }
 
 .concept-item.active .concept-num {
-  color: rgba(0, 207, 255, 0.45);
+  color: rgba(0, 207, 255, 0.5);
 }
 
 .concept-name-text {
@@ -216,12 +218,12 @@ body {
 }
 
 .concept-diff {
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 500;
   flex-shrink: 0;
   width: 24px;
   text-align: right;
   letter-spacing: 0;
-  opacity: 0.75;
 }
 
 .subcategory-header {
@@ -233,9 +235,9 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #8090B0;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -243,7 +245,7 @@ body {
   transition: background 0.12s;
 }
 
-.subcategory-header:hover { background: rgba(255,255,255,0.02); }
+.subcategory-header:hover { background: rgba(255,255,255,0.03); }
 
 .subcategory-arrow {
   font-size: 8px;
