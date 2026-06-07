@@ -26,6 +26,18 @@
         "name": "Arquitectura",
         "concepts": [
           {
+            "id": "cluster-managers",
+            "name": "Cluster Managers",
+            "theory": "Un Cluster Manager es el intermediario entre el Driver de Spark y los recursos físicos del cluster. Su responsabilidad es exclusivamente de gestión de recursos: recibe una solicitud del Driver (N executors con M GB y C cores), localiza nodos con capacidad disponible, lanza contenedores con esos recursos y se los entrega al Driver.\n\nExisten tres implementaciones principales. YARN (Yet Another Resource Negotiator) es el gestor de recursos del ecosistema Hadoop; es el más usado en entornos on-premise con infraestructura Hadoop existente. Kubernetes lanza cada Executor como un Pod independiente, lo que encaja naturalmente en entornos cloud-native donde todo corre en contenedores. Standalone es el cluster manager propio de Spark, sin dependencias externas; es la opción más simple para desarrollo o clusters dedicados exclusivamente a Spark.\n\nEl punto crítico es la separación de responsabilidades: el CM no conoce el DAG de Spark, no sabe cuántas particiones hay ni qué transformaciones se van a ejecutar. Una vez que los Executors están corriendo y se han registrado con el Driver, el CM sale del loop de ejecución completamente. Toda la comunicación de tasks, resultados parciales y datos de shuffle ocurre directamente entre Driver y Executors, sin pasar por el CM.",
+            "aplicacion": [
+              "La animación muestra el ciclo completo: Driver negocia con el CM, el CM asigna contenedores en workers, los Executors arrancan y se registran con el Driver.",
+              "Una vez registrados los Executors, el CM desaparece del flujo. Las tasks viajan directo del Driver a los Executors sin ningún intermediario.",
+              "El CM no conoce el DAG ni las particiones. Si el Driver decide hacer un broadcast join en vez de un sort-merge join, el CM no se entera — solo gestionó los contenedores.",
+              "En Kubernetes, cada Executor es un Pod con recursos definidos en un PodSpec. En YARN, el Driver actúa como ApplicationMaster y negocia containers con el ResourceManager. En Standalone, los workers registran sus recursos directamente con el Master.",
+              "Cambiar de YARN a K8s no cambia nada del código Spark — solo cambia cómo se asignan y liberan los contenedores. La interfaz entre Spark y el CM está abstraída."
+            ]
+          },
+          {
             "id": "driver-executors",
             "name": "Driver & Executors",
             "theory": "El Driver es el proceso central de una aplicación Spark. Es el que corre tu código Python o Scala: construye el plan lógico de ejecución, lo optimiza, y lo divide en Tasks que envía a los workers. Existe exactamente un Driver por aplicación.\n\nLos Executors son los procesos que corren en los nodos del cluster. Cada Executor recibe Tasks del Driver, las ejecuta contra sus particiones de datos, y devuelve los resultados. Son stateless en el sentido de que el Driver siempre puede re-lanzar un Executor caído y reenviar sus Tasks.\n\nEntre Driver y Executors hay un Cluster Manager (YARN, Kubernetes o Standalone) cuyo rol es asignar recursos — cuánta memoria y CPU obtiene cada Executor. El Cluster Manager no conoce nada del código Spark; solo gestiona contenedores.\n\nEl patrón clave: todo código que corre en el Driver es coordinación; todo código que corre en los Executors es procesamiento de datos. Un .collect() mueve todos los datos al Driver — es un anti-patrón para datasets grandes porque el Driver puede quedarse sin memoria.",
