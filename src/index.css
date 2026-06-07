@@ -170,14 +170,15 @@ body {
   align-items: center;
   gap: 6px;
   width: 100%;
-  padding: 7px 12px 7px 30px;
+  padding: 8px 12px 8px 30px;
   background: none;
   border: none;
   border-left: 2px solid transparent;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #9BAAC8;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   text-align: left;
   letter-spacing: 0.02em;
   transition: color 0.12s, border-color 0.12s, background 0.12s;
@@ -185,7 +186,7 @@ body {
 
 .concept-item:hover {
   color: var(--text-primary);
-  background: rgba(255,255,255,0.025);
+  background: rgba(255,255,255,0.03);
 }
 
 .concept-item.active {
