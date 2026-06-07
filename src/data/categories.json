@@ -40,6 +40,19 @@
             ]
           },
           {
+            "id": "stages-tasks",
+            "name": "Stages, Tasks & Slots",
+            "difficulty": 52,
+            "theory": "Cuando una Action dispara un Job, Spark no ejecuta las operaciones una por una — primero analiza el DAG completo y lo divide en Stages. Un Stage es un conjunto de operaciones que pueden ejecutarse sin redistribuir datos entre executors. Cada vez que el DAG requiere un shuffle (groupBy, join, orderBy, distinct), se crea un Stage boundary: el Stage anterior debe completarse antes de que el siguiente pueda empezar. Los stages son secuenciales entre sí.\n\nDentro de un Stage, la unidad de trabajo es el Task. Un Task representa exactamente una función aplicada a exactamente una partición. Si un Stage tiene 6 particiones, Spark crea 6 Tasks que pueden correr en paralelo. El grado de paralelismo real está limitado por los Slots disponibles: un Slot es un thread dentro de un Executor, equivalente a un CPU core asignado. Si hay 3 Executors con 2 cores cada uno, hay 6 Slots disponibles — los 6 Tasks de Stage 1 corren simultáneamente.\n\nEl Stage no cierra hasta que el último Task termina. Si un Task es lento (dato skewado, garbage collection, nodo lento), todos los demás Tasks del Stage ya terminados quedan esperando. Esto es el straggler problem — uno de los cuellos de botella más comunes en Spark.",
+            "aplicacion": [
+              "La animación muestra un Job con 2 Stages separados por un shuffle (groupBy). Stage 1 tiene 6 particiones, Stage 2 tiene 3.",
+              "En Stage 1, los 6 Tasks llenan los 6 Slots disponibles (3 executors × 2 slots) y procesan en paralelo simultáneamente.",
+              "El shuffle boundary es visible: Stage 2 no comienza hasta que Stage 1 termina completamente. Los datos se redistribuyen entre executors.",
+              "En Stage 2 hay solo 3 particiones tras el groupBy — 3 Tasks, uno por executor. La mitad de los slots quedan ociosos.",
+              "La escena final resume la jerarquía: Action → Job → Stage (secuencial) → Task (paralelo) → Slot (1 CPU core)."
+            ]
+          },
+          {
             "id": "driver-executors",
             "name": "Driver & Executors",
             "difficulty": 40,
