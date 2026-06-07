@@ -53,6 +53,12 @@ El autor está en proceso de entrevistas para roles senior de data engineering y
 
 Sin backend ni base de datos. El contenido vive como archivos JSON versionados en el repo. Nginx sirve el build estático generado por `npm run build`.
 
+### Archivos de datos
+
+- `src/data/categories.json` — fuente de datos del app. Cada concepto requiere: `id`, `name`, `difficulty` (int 1–100), `theory` (string), `aplicacion` (string[]). El campo `difficulty` alimenta el badge y el orden en el sidebar.
+- `src/data/roadmap.json` — tracking file del proyecto con los 187 conceptos planificados. Cada entrada tiene `name`, `order`, `difficulty`, `done`. Actualizar `done: true` al terminar cada concepto.
+- `src/animations/index.js` — mapa `"concept-id": Componente`. La clave debe coincidir exactamente con el `id` en `categories.json`.
+
 ## Reglas de desarrollo
 
 - Todo el código, nombres de variables, funciones, archivos y commits van en **inglés**
