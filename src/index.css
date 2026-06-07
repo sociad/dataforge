@@ -166,9 +166,11 @@ body {
 }
 
 .concept-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   width: 100%;
-  padding: 7px 16px 7px 36px;
+  padding: 7px 12px 7px 30px;
   background: none;
   border: none;
   border-left: 2px solid transparent;
@@ -190,6 +192,35 @@ body {
   color: var(--accent);
   border-left-color: var(--accent);
   background: var(--accent-dim);
+}
+
+.concept-num {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  width: 18px;
+  text-align: right;
+  letter-spacing: 0;
+}
+
+.concept-item.active .concept-num {
+  color: rgba(0, 207, 255, 0.45);
+}
+
+.concept-name-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.concept-diff {
+  font-size: 10px;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: right;
+  letter-spacing: 0;
+  opacity: 0.75;
 }
 
 .subcategory-header {

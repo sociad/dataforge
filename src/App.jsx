@@ -1,4 +1,11 @@
 import { useState, useMemo } from 'react'
+
+const diffColor = d =>
+  d < 40 ? '#2BB87A' :
+  d < 65 ? '#CC6020' :
+           '#8855CC'
+
+const byDiff = (a, b) => (a.difficulty ?? 50) - (b.difficulty ?? 50)
 import categories from './data/categories.json'
 import { animations } from './animations/index.js'
 import './index.css'
@@ -57,13 +64,19 @@ export default function App() {
                 <>
                   {cat.concepts?.length > 0 && (
                     <ul className="concept-list">
-                      {cat.concepts.map(concept => (
+                      {cat.concepts.slice().sort(byDiff).map((concept, i) => (
                         <li key={concept.id}>
                           <button
                             className={`concept-item ${selected?.id === concept.id ? 'active' : ''}`}
                             onClick={() => setSelected({ ...concept, categoryName: cat.name })}
                           >
-                            {concept.name}
+                            <span className="concept-num">{String(i + 1).padStart(2, '0')}</span>
+                            <span className="concept-name-text">{concept.name}</span>
+                            {concept.difficulty != null && (
+                              <span className="concept-diff" style={{ color: diffColor(concept.difficulty) }}>
+                                {concept.difficulty}
+                              </span>
+                            )}
                           </button>
                         </li>
                       ))}
@@ -79,13 +92,19 @@ export default function App() {
                       </button>
                       {expanded.includes(sub.id) && (
                         <ul className="concept-list">
-                          {sub.concepts.map(concept => (
+                          {sub.concepts.slice().sort(byDiff).map((concept, i) => (
                             <li key={concept.id}>
                               <button
                                 className={`concept-item concept-item--nested ${selected?.id === concept.id ? 'active' : ''}`}
                                 onClick={() => setSelected({ ...concept, categoryName: `${cat.name} · ${sub.name}` })}
                               >
-                                {concept.name}
+                                <span className="concept-num">{String(i + 1).padStart(2, '0')}</span>
+                                <span className="concept-name-text">{concept.name}</span>
+                                {concept.difficulty != null && (
+                                  <span className="concept-diff" style={{ color: diffColor(concept.difficulty) }}>
+                                    {concept.difficulty}
+                                  </span>
+                                )}
                               </button>
                             </li>
                           ))}

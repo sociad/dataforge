@@ -6,6 +6,7 @@
       {
         "id": "window-functions",
         "name": "Window Functions",
+        "difficulty": 60,
         "theory": "Una window function calcula un valor para cada fila usando un conjunto de filas relacionadas —la ventana— sin colapsar el resultado en una sola fila. Esta es la diferencia fundamental con GROUP BY: cada fila de entrada sobrevive en el output, enriquecida con el cálculo sobre sus vecinas.\n\nLa ventana se define con tres cláusulas: PARTITION BY divide las filas en grupos independientes; ORDER BY establece el orden dentro de cada partición; y el frame (ROWS BETWEEN / RANGE BETWEEN) acota exactamente qué filas forman la ventana en cada paso.\n\nFunciones comunes: ranking (RANK, DENSE_RANK, ROW_NUMBER), analíticas (LAG, LEAD, FIRST_VALUE, LAST_VALUE) y agregaciones en contexto ventana (SUM, AVG, MAX, MIN).",
         "aplicacion": [
           "La animación calcula SUM(salary) particionado por departamento con una ventana acumulativa.",
@@ -28,6 +29,7 @@
           {
             "id": "cluster-managers",
             "name": "Cluster Managers",
+            "difficulty": 48,
             "theory": "Un Cluster Manager es el intermediario entre el Driver de Spark y los recursos físicos del cluster. Su responsabilidad es exclusivamente de gestión de recursos: recibe una solicitud del Driver (N executors con M GB y C cores), localiza nodos con capacidad disponible, lanza contenedores con esos recursos y se los entrega al Driver.\n\nExisten tres implementaciones principales. YARN (Yet Another Resource Negotiator) es el gestor de recursos del ecosistema Hadoop; es el más usado en entornos on-premise con infraestructura Hadoop existente. Kubernetes lanza cada Executor como un Pod independiente, lo que encaja naturalmente en entornos cloud-native donde todo corre en contenedores. Standalone es el cluster manager propio de Spark, sin dependencias externas; es la opción más simple para desarrollo o clusters dedicados exclusivamente a Spark.\n\nEl punto crítico es la separación de responsabilidades: el CM no conoce el DAG de Spark, no sabe cuántas particiones hay ni qué transformaciones se van a ejecutar. Una vez que los Executors están corriendo y se han registrado con el Driver, el CM sale del loop de ejecución completamente. Toda la comunicación de tasks, resultados parciales y datos de shuffle ocurre directamente entre Driver y Executors, sin pasar por el CM.",
             "aplicacion": [
               "La animación muestra el ciclo completo: Driver negocia con el CM, el CM asigna contenedores en workers, los Executors arrancan y se registran con el Driver.",
@@ -40,6 +42,7 @@
           {
             "id": "driver-executors",
             "name": "Driver & Executors",
+            "difficulty": 40,
             "theory": "El Driver es el proceso central de una aplicación Spark. Es el que corre tu código Python o Scala: construye el plan lógico de ejecución, lo optimiza, y lo divide en Tasks que envía a los workers. Existe exactamente un Driver por aplicación.\n\nLos Executors son los procesos que corren en los nodos del cluster. Cada Executor recibe Tasks del Driver, las ejecuta contra sus particiones de datos, y devuelve los resultados. Son stateless en el sentido de que el Driver siempre puede re-lanzar un Executor caído y reenviar sus Tasks.\n\nEntre Driver y Executors hay un Cluster Manager (YARN, Kubernetes o Standalone) cuyo rol es asignar recursos — cuánta memoria y CPU obtiene cada Executor. El Cluster Manager no conoce nada del código Spark; solo gestiona contenedores.\n\nEl patrón clave: todo código que corre en el Driver es coordinación; todo código que corre en los Executors es procesamiento de datos. Un .collect() mueve todos los datos al Driver — es un anti-patrón para datasets grandes porque el Driver puede quedarse sin memoria.",
             "aplicacion": [
               "El Driver construye el DAG completo antes de ejecutar. Ningún dato se mueve hasta que llega una acción (.show(), .write(), .count()).",
@@ -57,6 +60,7 @@
           {
             "id": "shuffle",
             "name": "Shuffle",
+            "difficulty": 65,
             "theory": "El shuffle es la redistribución de datos entre particiones en Spark. Ocurre cuando una operación necesita que filas con la misma clave estén en el mismo executor: groupBy, join, orderBy, distinct.\n\nEl proceso tiene tres fases. Shuffle write: cada executor serializa sus filas clasificadas por hash(clave) y las escribe a disco local. Transferencia de red: los datos viajan entre executors — cada executor envía los datos que no le corresponden a quien los necesita. Shuffle read: los executors leen desde el disco de los otros y reciben los datos en su partición final.\n\nEl costo real está en la transferencia de red y en la doble escritura a disco (shuffle write + shuffle read). En datasets de terabytes, un shuffle puede tomar minutos y convertirse en el cuello de botella de todo el job.\n\nSpark intenta minimizarlos: el optimizer empuja filtros antes del shuffle (predicate pushdown), los broadcast joins envían una tabla pequeña a todos los executors para evitar redistribuir la tabla grande, y el bucketing pre-particiona los datos en disco para evitar reshuffles en joins repetidos.",
             "aplicacion": [
               "La animación muestra 3 executors con filas de 3 departamentos mezcladas — el estado típico después de leer un archivo sin particionado por clave.",
