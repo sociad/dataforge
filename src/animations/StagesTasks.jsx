@@ -92,7 +92,9 @@ function drawFrame(ctx, W, p) {
   const initOp    = eout(pg(p, 0, 0.07))
   const actionOp  = scene <= 1 ? eout(pg(p, 0.02, 0.09)) : 1 - eout(pg(p, 0.222, 0.275))
   const dagOp     = scene === 1 ? eout(pg(p, 0.111, 0.185)) : scene > 1 ? 1 - eout(pg(p, 0.222, 0.275)) : 0
-  const exeOp     = scene >= 2 ? eout(pg(p, 0.222, 0.290)) : 0
+  const exeOp     = scene >= 2 && scene < 8 ? eout(pg(p, 0.222, 0.290))
+                  : scene === 8             ? 1 - eout(pg(p, 0.889, 0.935))
+                  : 0
 
   // Stage 1 slots
   const s1Op      = scene >= 2 && scene <= 4 ? eout(pg(p, 0.245, 0.315))
@@ -106,21 +108,26 @@ function drawFrame(ctx, W, p) {
   const shuffleT  = pg(p, 0.560, 0.650)
 
   // Stage 2 slots
-  const s2Op      = scene >= 6 ? eout(pg(p, 0.667, 0.730)) : 0
+  const s2Op      = scene >= 6 && scene < 8 ? eout(pg(p, 0.667, 0.730))
+                  : scene === 8             ? 1 - eout(pg(p, 0.889, 0.935))
+                  : 0
   const s2ProcT   = eout(pg(p, 0.710, 0.840))
-  const s2DoneOp  = eout(pg(p, 0.800, 0.870))
+  const s2DoneOp  = scene < 8 ? eout(pg(p, 0.800, 0.870))
+                  : 1 - eout(pg(p, 0.889, 0.935))
 
   // Result dots (scene 7)
   const resultOp  = scene === 7 ? eout(pg(p, 0.790, 0.840)) : 0
   const resultT   = pg(p, 0.810, 0.889)
 
   // Summary (scene 8)
-  const summaryOp = eout(pg(p, 0.889, 0.950))
+  const summaryOp = eout(pg(p, 0.920, 0.975))
 
   // Stage header logic
   const s1HeaderOp = scene >= 2 && scene <= 4 ? eout(pg(p, 0.222, 0.270))
                    : scene === 5 ? 1 - eout(pg(p, 0.556, 0.620)) : 0
-  const s2HeaderOp = scene >= 6 ? eout(pg(p, 0.667, 0.720)) : 0
+  const s2HeaderOp = scene >= 6 && scene < 8 ? eout(pg(p, 0.667, 0.720))
+                   : scene === 8             ? 1 - eout(pg(p, 0.889, 0.930))
+                   : 0
   const shHeaderOp = scene === 5 ? eout(pg(p, 0.556, 0.625)) : 0
 
   // ── DRAW ──────────────────────────────────────────────
