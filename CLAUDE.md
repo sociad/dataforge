@@ -64,6 +64,18 @@ Sin backend ni base de datos. El contenido vive como archivos JSON versionados e
 - Todo el código, nombres de variables, funciones, archivos y commits van en **inglés**
 - Toda conversación, documentación y este archivo van en **español**
 
+## Proceso de implementación de animaciones
+
+Para evitar bucles de debugging que consumen el contexto, seguir siempre este orden:
+
+1. **Storyboard primero** — Proponer las N escenas (título + qué muestra cada una) y esperar aprobación antes de escribir una línea de código.
+2. **Planificar el layout en texto** — Antes de codificar, definir por escrito: constantes de layout (posiciones X/Y como fracción de W/H), variables de progreso por escena (qué fades in/out y cuándo), y helpers necesarios.
+3. **Escribir el archivo completo de una vez** — Con el plan claro, escribir `drawFrame` escena por escena en un solo `Write`. No iterar en el chat. El planning textual reemplaza la iteración de código.
+4. **Verificar con build + Playwright** — `npm run build` para detectar errores de compilación, luego Playwright headless para verificar visualmente. Si hay bugs, un solo `Edit` dirigido.
+5. **Commit al primer build limpio** — No acumular correcciones sin checkpoint.
+
+**Por qué este orden:** escribir código incompleto y corregirlo en el chat genera respuestas largas con código completo en cada turno, lo que agota el contexto rápidamente. El planning textual es barato; la iteración de código es cara.
+
 ## Animaciones
 
 Cada animación de concepto debe:
