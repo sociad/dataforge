@@ -3,6 +3,7 @@ import DriverExecutors  from './DriverExecutors'
 import Shuffle          from './Shuffle'
 import ClusterManagers  from './ClusterManagers'
 import StagesTasks      from './StagesTasks'
+import DAGScheduler     from './DAGScheduler'
 
 export const animations = {
   'window-functions':  WindowFunctions,
@@ -10,4 +11,5 @@ export const animations = {
   'shuffle':           Shuffle,
   'cluster-managers':  ClusterManagers,
   'stages-tasks':      StagesTasks,
+  'dag-scheduler':     DAGScheduler,
 }

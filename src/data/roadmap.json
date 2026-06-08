@@ -53,7 +53,7 @@
           "driver-executors":            { "name": "Driver & Executors",                            "order":  1, "difficulty":  40, "done": true  },
           "cluster-managers":            { "name": "Cluster Managers (YARN / K8s / Standalone)",    "order":  2, "difficulty":  48, "done": true  },
           "stages-tasks":                { "name": "Stages, Tasks & Slots",                         "order":  3, "difficulty":  52, "done": true  },
-          "dag-scheduler":               { "name": "DAG Scheduler & Task Scheduler",                "order":  4, "difficulty":  58, "done": false },
+          "dag-scheduler":               { "name": "DAG Scheduler & Task Scheduler",                "order":  4, "difficulty":  58, "done": true  },
           "rdd-vs-dataframe":            { "name": "RDD vs DataFrame vs Dataset",                   "order":  5, "difficulty":  52, "done": false },
           "catalyst-optimizer":          { "name": "Catalyst Optimizer",                            "order":  6, "difficulty":  72, "done": false },
           "tungsten-engine":             { "name": "Tungsten Execution Engine",                     "order":  7, "difficulty":  75, "done": false },

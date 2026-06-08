@@ -53,6 +53,19 @@
             ]
           },
           {
+            "id": "dag-scheduler",
+            "name": "DAG Scheduler & Task Scheduler",
+            "difficulty": 58,
+            "theory": "Cuando Spark recibe un Job, el proceso de planificación pasa por dos capas independientes con responsabilidades bien separadas.\n\nEl DAG Scheduler opera a nivel de Stage. Recibe el DAG lógico completo y lo analiza buscando wide transformations — operaciones como groupBy, join o orderBy que requieren redistribuir datos entre particiones. Cada wide transformation crea un Stage boundary: el DAG se corta en Stages que deben ejecutarse de forma secuencial. El DAG Scheduler no conoce ni los Executors ni los slots disponibles; su única preocupación es la estructura del DAG.\n\nEl Task Scheduler opera a nivel de Task. Recibe los Stages del DAG Scheduler y los traduce en tasks concretas: una Task por partición. Luego asigna estas Tasks a los Executor slots disponibles, priorizando localidad de datos — prefiere que el Task corra en el nodo que ya tiene los datos. El Task Scheduler no conoce la estructura del DAG; solo ve una lista de Tasks y un pool de slots.\n\nLa separación es deliberada: el DAG Scheduler puede razonar sobre dependencias sin saber nada de infraestructura, y el Task Scheduler puede optimizar asignaciones sin saber nada sobre por qué ese Task existe.",
+            "aplicacion": [
+              "La animación muestra un Job con 2 Stages separados por una wide transformation (groupBy). Stage 0 tiene 4 particiones; Stage 1 tiene 3 tras el shuffle.",
+              "En la escena Narrow vs Wide, el DAG Scheduler colorea cada operación: verde para narrow (map, filter — no mueven datos), naranja para wide (groupBy — requiere redistribución).",
+              "El corte de Stages ocurre exactamente en la wide transformation. Todo lo previo forma Stage 0; todo lo posterior forma Stage 1.",
+              "El Task Scheduler asigna 4 Tasks a los 4 slots disponibles (2 executors × 2 slots). Corren en paralelo — el paralelismo real lo determina el número de slots, no de Tasks.",
+              "En Stage 1 hay 3 Tasks pero 4 slots: un slot queda ocioso. Esto es normal — el número de Tasks post-shuffle (spark.sql.shuffle.partitions) no siempre coincide con los slots disponibles."
+            ]
+          },
+          {
             "id": "driver-executors",
             "name": "Driver & Executors",
             "difficulty": 40,
